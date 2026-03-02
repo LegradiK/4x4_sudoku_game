@@ -1,5 +1,6 @@
 # import pygame library
 import pygame
+from csv_reader import load_random_puzzle
 from button import Button
 
 SCREEN_WIDTH = 800
@@ -18,6 +19,8 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 # Title and Icon 
 pygame.display.set_caption("4x4 Sudoku")
 
+quiz, answer = load_random_puzzle()
+current_quiz = [row[:] for row in quiz] # make a copy of the current quiz
 
 x = 0
 y = 0
@@ -25,12 +28,8 @@ dif = SCREEN_WIDTH /4
 val = 0
 wrong_cells = set()
 # Default Sudoku Board.
-grid =[
-        [4, 3, 2, 1],
-        [0, 0, 3, 0],
-        [0, 4, 0, 0],
-        [2, 1, 0, 0],
-    ]
+grid = quiz
+
 # error message timer
 error_time = pygame.time.get_ticks()
 
@@ -185,23 +184,15 @@ while run:
                 is_solved = 0
                 error = 0
                 flag2 = 0
-                grid = [
-                    [4, 3, 2, 1],
-                    [0, 2, 3, 0],
-                    [0, 4, 0, 0],
-                    [2, 1, 0, 0],
-                ]
+                quiz, solution = load_random_puzzle()
+                current_quiz = [row[:] for row in quiz]
+                grid = quiz
             elif restart_button.is_clicked(event):
                 # Reset board (Restart logic)
                 is_solved = 0
                 error = 0
                 flag2 = 0
-                grid = [
-                    [0, 3, 2, 1],
-                    [0, 0, 3, 0],
-                    [0, 4, 0, 0],
-                    [2, 1, 0, 0],
-                ]
+                grid = current_quiz
             else:
                 pos = event.pos
 
@@ -237,17 +228,6 @@ while run:
                 val = 4
             if event.key == pygame.K_RETURN:
                 flag2 = 1   
-            # If D is pressed reset the board to default 
-            if event.key == pygame.K_d:
-                is_solved = 0
-                error = 0
-                flag2 = 0
-                grid =[
-                [0, 3, 2, 1],
-                [0, 0, 3, 0],
-                [0, 4, 0, 0],
-                [2, 1, 0, 0],
-                ]
             if event.key in (pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, 
                                 pygame.K_KP1, pygame.K_KP2, pygame.K_KP3, pygame.K_KP4):
 
@@ -269,7 +249,7 @@ while run:
 
             # erase number from the cell
             if event.type == pygame.KEYDOWN:
-                if event.key in (pygame.K_e, pygame.K_DELETE, pygame.K_BACKSPACE):
+                if event.key in (pygame.K_e, pygame.K_d, pygame.K_DELETE, pygame.K_BACKSPACE):
                     row = int(y)
                     col = int(x)
 
