@@ -115,18 +115,20 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if new_game_button.is_clicked(event):
                 quiz, solution = load_new_game()
-                state.grid = quiz
+                state.grid = [row[:] for row in quiz]
                 state.original_grid = [row[:] for row in quiz]
                 state.solution = solution
                 state.wrong_cells.clear()
                 is_solved = False
                 show_warning = False
+                show_fill_warning = False
 
             elif restart_button.is_clicked(event):
                 state.grid = [row[:] for row in state.original_grid]
                 state.wrong_cells.clear()
                 is_solved = False
                 show_warning = False
+                show_fill_warning = False
 
             else:
                 x, y = event.pos
@@ -156,7 +158,7 @@ while running:
                 row = state.selected_row
                 col = state.selected_col
 
-                if original_grid[row][col] == 0:
+                if state.original_grid[row][col] == 0 or state.solution[row][col] != state.grid[row][col]:
                     state.grid[row][col] = value
                     if state.solution and value == state.solution[row][col]:
                         state.wrong_cells.discard((row, col))
